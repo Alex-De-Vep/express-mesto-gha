@@ -1,3 +1,4 @@
+const { isValidObjectId } = require('mongoose');
 const User = require('../models/user');
 
 const getUsers = (req, res) => {
@@ -9,15 +10,13 @@ const getUsers = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
-      }
+  if (!isValidObjectId(req.params.userId.trim().toString())) {
+    res.status(400).send({ message: 'Переданы некорректные данные' });
+    return;
+  }
 
-      res.send({ data: user });
-    })
+  User.findById(req.params.userId)
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
