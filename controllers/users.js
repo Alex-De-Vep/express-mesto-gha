@@ -16,7 +16,14 @@ const getCurrentUser = (req, res) => {
   }
 
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
+      }
+
+      res.send({ user });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
