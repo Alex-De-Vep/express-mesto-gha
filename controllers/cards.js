@@ -40,7 +40,14 @@ const setCardLike = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((data) => res.send({ data }))
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
+      }
+
+      res.send({ card });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
@@ -62,7 +69,14 @@ const deleteCardLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((data) => res.send({ data }))
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
+      }
+
+      res.send({ card });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
@@ -70,7 +84,7 @@ const deleteCardLike = (req, res) => {
       }
 
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+        res.status(400).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
 
