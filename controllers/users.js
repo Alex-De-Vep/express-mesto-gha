@@ -13,7 +13,7 @@ const getCurrentUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(400).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
 
