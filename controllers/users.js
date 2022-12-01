@@ -1,4 +1,3 @@
-const { isValidObjectId } = require('mongoose');
 const User = require('../models/user');
 
 const getUsers = (req, res) => {

@@ -1,6 +1,8 @@
 {
   "name": "express-mesto",
-  "version": "0.1.0",
+  "description": "backend - node express for react mesto",
+  "version": "1.0.0",
+  "author": "Павлов Алексей <alex.pavlov.948@gmail.com>",
   "devDependencies": {
     "eslint": "^8.28.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -12,6 +14,7 @@
     "dev": "nodemon app.js",
     "lint": "npx eslint ."
   },
+  "main": "app.js",
   "dependencies": {
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",

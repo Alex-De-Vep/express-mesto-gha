@@ -1,4 +1,3 @@
-const { isValidObjectId } = require('mongoose');
 const Card = require('../models/card');
 
 const createCard = (req, res) => {
