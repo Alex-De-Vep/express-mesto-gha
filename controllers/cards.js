@@ -23,23 +23,16 @@ const getCards = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  if (!isValidObjectId(req.params.cardId.trim().toString())) {
-    res.status(400).send({ message: 'Переданы некорректные данные' });
-    return;
-  }
-
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail(() => {
+      res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+    })
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
-      }
-
       res.send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+        res.status(400).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
 
@@ -48,32 +41,20 @@ const deleteCard = (req, res) => {
 };
 
 const setCardLike = (req, res) => {
-  if (!isValidObjectId(req.params.cardId.trim().toString())) {
-    res.status(400).send({ message: 'Переданы некорректные данные' });
-    return;
-  }
-
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+    })
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
-      }
-
       res.send({ card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
-        return;
-      }
-
-      if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
 
@@ -82,32 +63,20 @@ const setCardLike = (req, res) => {
 };
 
 const deleteCardLike = (req, res) => {
-  if (!isValidObjectId(req.params.cardId.trim().toString())) {
-    res.status(400).send({ message: 'Переданы некорректные данные' });
-    return;
-  }
-
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+    })
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
-      }
-
       res.send({ card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
-        return;
-      }
-
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
 
