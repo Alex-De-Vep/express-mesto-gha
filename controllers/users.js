@@ -11,13 +11,16 @@ const getUsers = (req, res) => {
 
 const getCurrentUser = (req, res) => {
   User.findById(req.params.userId)
-    .orFail(() => {
-      res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-    })
+    .orFail()
     .then((user) => {
       res.send({ user });
     })
     .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
+
       if (err.name === 'CastError') {
         res.status(ERROR_CODE_VALIDATION).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
@@ -46,11 +49,14 @@ const updateUser = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
-    .orFail(() => {
-      res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-    })
+    .orFail()
     .then((data) => res.send({ data }))
     .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
+
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_VALIDATION).send({ message: 'Переданы некорректные данные' });
         return;
@@ -64,11 +70,14 @@ const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
-    .orFail(() => {
-      res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-    })
+    .orFail()
     .then((data) => res.send({ data }))
     .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
+
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_VALIDATION).send({ message: 'Переданы некорректные данные' });
         return;

@@ -24,13 +24,16 @@ const getCards = (req, res) => {
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
-      res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-    })
+    .orFail()
     .then((card) => {
       res.send({ card });
     })
     .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
+      }
+
       if (err.name === 'CastError') {
         res.status(ERROR_CODE_VALIDATION).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
@@ -46,13 +49,16 @@ const setCardLike = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-    })
+    .orFail()
     .then((card) => {
       res.send({ card });
     })
     .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
+      }
+
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_VALIDATION).send({ message: 'Переданы некорректные данные' });
         return;
@@ -68,13 +74,16 @@ const deleteCardLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-    })
+    .orFail()
     .then((card) => {
       res.send({ card });
     })
     .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
+        return;
+      }
+
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_VALIDATION).send({ message: 'Переданы некорректные данные' });
         return;
