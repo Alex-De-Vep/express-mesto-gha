@@ -16,7 +16,7 @@ const getCurrentUser = (req, res) => {
       res.send({ user });
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
@@ -52,7 +52,7 @@ const updateUser = (req, res) => {
     .orFail()
     .then((data) => res.send({ data }))
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
@@ -73,7 +73,7 @@ const updateUserAvatar = (req, res) => {
     .orFail()
     .then((data) => res.send({ data }))
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }

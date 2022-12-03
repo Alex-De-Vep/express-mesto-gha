@@ -29,7 +29,7 @@ const deleteCard = (req, res) => {
       res.send({ card });
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
@@ -54,7 +54,7 @@ const setCardLike = (req, res) => {
       res.send({ card });
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
@@ -79,7 +79,7 @@ const deleteCardLike = (req, res) => {
       res.send({ card });
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
