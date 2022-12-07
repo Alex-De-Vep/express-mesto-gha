@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { ValidationError, NotFoundError } = require('../utils/errors');
+const { ValidationError, NotFoundError, ForbiddenError } = require('../utils/errors');
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -22,10 +22,15 @@ const getCards = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .orFail()
     .then((card) => {
-      res.send({ card });
+      if (!card.owner.equals(req.user._id)) {
+        next(new ForbiddenError('Невозможно удалить карточку'));
+      } else {
+        Card.deleteOne(card)
+          .then(() => res.send({card}));
+      }
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {

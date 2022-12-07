@@ -12,6 +12,13 @@ class AuthError extends Error {
   }
 }
 
+class ForbiddenError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 403;
+  }
+}
+
 class NotFoundError extends Error {
   constructor(message) {
     super(message);
@@ -22,13 +29,14 @@ class NotFoundError extends Error {
 class DataAlreadyUseError extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = 401;
+    this.statusCode = 409;
   }
 }
 
 module.exports = {
   NotFoundError,
   ValidationError,
+  ForbiddenError,
   AuthError,
   DataAlreadyUseError,
 };

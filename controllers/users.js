@@ -20,10 +20,10 @@ const createUser = (req, res, next) => {
       User.create({
         name, about, avatar, email, password: hash,
       })
-        .then(() => res.send({ registration: 'success' }))
+        .then(user => res.send({ user }))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new DataAlreadyUseError('Переданы некорректные данные'));
+            next(new DataAlreadyUseError('Невозможно использовать эти данные'));
           }
 
           if (err.name === 'ValidationError') {
