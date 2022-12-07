@@ -20,7 +20,7 @@ const createUser = (req, res, next) => {
       User.create({
         name, about, avatar, email, password: hash,
       })
-        .then((user) => res.send({ _id: user._id, email: user.email }))
+        .then(user => res.send({ user }))
         .catch((err) => {
           if (err.code === 11000) {
             next(new DataAlreadyUseError('Переданы некорректные данные'));

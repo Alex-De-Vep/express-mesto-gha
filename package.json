@@ -12,7 +12,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint ."
+    "lint": "npx eslint .",
+    "fix": "npx eslint . --fix"
   },
   "main": "app.js",
   "dependencies": {
