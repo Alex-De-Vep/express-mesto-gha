@@ -4,15 +4,8 @@ const { ValidationError, NotFoundError, ForbiddenError } = require('../utils/err
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
 
-  Card.create({ name, link, owner: req.user._id }, { runValidators: true, new: true })
-    .then((card) => res.send({
-      id: card._id,
-      name: card.name,
-      link: card.link,
-      owner: card.owner,
-      likes: card.likes,
-      createdAt: card.createdAt
-    }))
+  Card.create({ name, link, owner: req.user._id })
+    .then((card) => res.send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
