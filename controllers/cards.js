@@ -29,7 +29,7 @@ const deleteCard = (req, res, next) => {
         next(new ForbiddenError('Невозможно удалить карточку'));
       } else {
         Card.deleteOne(card)
-          .then(() => res.send({card}));
+          .then(() => res.send({ card }));
       }
     })
     .catch((err) => {
