@@ -20,7 +20,9 @@ const createUser = (req, res, next) => {
       User.create({
         name, about, avatar, email, password: hash,
       })
-        .then((user) => res.send({ name: user.name, about: user.about, email: user.email, avatar: user.avatar }))
+        .then((user) => res.send({
+          name: user.name, about: user.about, email: user.email, avatar: user.avatar,
+        }))
         .catch((err) => {
           if (err.code === 11000) {
             next(new DataAlreadyUseError('Невозможно использовать эти данные'));
