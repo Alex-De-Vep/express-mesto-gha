@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { ValidationError, NotFoundError } = require('../utils/errors');
+const { ValidationError, NotFoundError, DataAlreadyUseError } = require('../utils/errors');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -20,8 +20,12 @@ const createUser = (req, res, next) => {
       User.create({
         name, about, avatar, email, password: hash,
       })
-        .then((data) => res.send({ data }))
+        .then((user) => res.send({ _id: user._id, email: user.email }))
         .catch((err) => {
+          if (err.code === 11000) {
+            next(new DataAlreadyUseError('Переданы некорректные данные'));
+          }
+
           if (err.name === 'ValidationError') {
             next(new ValidationError('Переданы некорректные данные'));
           }
@@ -29,7 +33,6 @@ const createUser = (req, res, next) => {
           next(err);
         });
     })
-    .then((user) => res.send({ _id: user._id, email: user.email }))
     .catch(next);
 };
 
@@ -42,8 +45,8 @@ const login = (req, res, next) => {
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
-        sameSite: true,
       });
+      res.send({ _id: user._id, email: user.email });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
