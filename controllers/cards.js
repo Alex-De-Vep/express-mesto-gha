@@ -1,28 +1,27 @@
 const Card = require('../models/card');
-const { ERROR_CODE, ERROR_CODE_VALIDATION, ERROR_CODE_NOT_FOUND } = require('../Constants');
+const { ValidationError, NotFoundError } = require('../utils/errors');
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
 
-  Card.create({ name, link, owner: req.user._id })
+  Card.create({ name, link, owner: req.user._id }, { runValidators: true, new: true })
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_VALIDATION).send({ message: 'Переданы некорректные данные' });
-        return;
+        next(new ValidationError('Переданы некорректные данные'));
       }
 
-      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
+      next();
     });
 };
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((data) => res.send({ data }))
-    .catch(() => res.status(ERROR_CODE).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail()
     .then((card) => {
@@ -30,20 +29,18 @@ const deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        next(new NotFoundError('Запрашиваемая карточка не найдена'));
       }
 
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE_VALIDATION).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        next(new ValidationError('Переданы некорректные данные'));
       }
 
-      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
+      next();
     });
 };
 
-const setCardLike = (req, res) => {
+const setCardLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -55,20 +52,18 @@ const setCardLike = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        next(new NotFoundError('Запрашиваемая карточка не найдена'));
       }
 
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(ERROR_CODE_VALIDATION).send({ message: 'Переданы некорректные данные' });
-        return;
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные'));
       }
 
-      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
+      next();
     });
 };
 
-const deleteCardLike = (req, res) => {
+const deleteCardLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -80,16 +75,14 @@ const deleteCardLike = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        next(new NotFoundError('Запрашиваемая карточка не найдена'));
       }
 
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(ERROR_CODE_VALIDATION).send({ message: 'Переданы некорректные данные' });
-        return;
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные'));
       }
 
-      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
+      next();
     });
 };
 
