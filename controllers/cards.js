@@ -5,7 +5,14 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id }, { runValidators: true, new: true })
-    .then((data) => res.send({ data }))
+    .then((card) => res.send({
+      id: card._id,
+      name: card.name,
+      link: card.link,
+      owner: card.owner,
+      likes: card.likes,
+      createdAt: card.createdAt
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
