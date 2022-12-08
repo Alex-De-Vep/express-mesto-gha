@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const BadRequestError  = require('../utils/errors/badRequest');
-const NotFoundError  = require('../utils/errors/notFound');
-const ForbiddenError = require("../utils/errors/forbidden");
+const BadRequestError = require('../utils/errors/badRequest');
+const NotFoundError = require('../utils/errors/notFound');
+const ConflictError = require('../utils/errors/сonflict');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -22,7 +22,7 @@ const createUser = (req, res, next) => {
         }))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new ForbiddenError('Невозможно использовать эти данные'));
+            next(new ConflictError('Невозможно использовать эти данные'));
             return;
           }
 
