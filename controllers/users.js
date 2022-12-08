@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { BadRequestError } = require('../utils/errors/badRequest');
-const { NotFoundError } = require('../utils/errors/notFound');
-const { ForbiddenError } = require('../utils/errors/forbidden');
+const BadRequestError  = require('../utils/errors/badRequest');
+const NotFoundError  = require('../utils/errors/notFound');
+const ForbiddenError = require("../utils/errors/forbidden");
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -107,7 +107,6 @@ const updateUser = (req, res, next) => {
     .orFail()
     .then((user) => res.send({ user }))
     .catch((err) => {
-      console.log(err);
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
         return;
