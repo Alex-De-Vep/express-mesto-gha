@@ -10,12 +10,6 @@
     "ecmaVersion": "latest"
   },
   "rules": {
-    "max-classes-per-file": [
-      "error",
-      { "ignoreExpressions": true,
-        "max": 5
-      }
-    ],
     "no-underscore-dangle": [
       "error",
       {

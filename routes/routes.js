@@ -1,30 +1,36 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const {
-  getUser, getUsers, getCurrentUser, updateUser, updateUserAvatar,
-} = require('../controllers/users');
+const { regexp } = require('../utils/utils');
+const { createUser, login } = require('../controllers/users');
+const auth = require('../middlewares/auth');
+const routerCard = require('./routerCard');
+const routerUser = require('./routerUser');
+const NotFoundError = require('../utils/errors/notFound');
 
-router.get('/users', getUsers);
-
-router.get('/users/me', getUser);
-
-router.get('/users/:userId', celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
-  }),
-}), getCurrentUser);
-
-router.patch('/users/me', celebrate({
+router.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
+    avatar: Joi.string().regex(regexp),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
-}), updateUser);
+}), createUser);
 
-router.patch('/users/me/avatar', celebrate({
+router.post('/signin', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().min(2).regex(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
-}), updateUserAvatar);
+}), login);
+
+router.use(auth);
+
+router.use('/', routerUser);
+router.use('/', routerCard);
+
+router.use('/', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
+});
 
 module.exports = router;

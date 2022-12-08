@@ -1,8 +1,9 @@
 const bcrypt = require('bcryptjs');
-const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { ValidationError, NotFoundError, DataAlreadyUseError } = require('../utils/errors');
+const { BadRequestError } = require('../utils/errors/badRequest');
+const { NotFoundError } = require('../utils/errors/notFound');
+const { ForbiddenError } = require('../utils/errors/forbidden');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -10,10 +11,6 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
-  if (!validator.isEmail(email)) {
-    next(new ValidationError('Неправильные почта или пароль'));
-  }
 
   bcrypt.hash(password, 10)
     .then((hash) => {
@@ -25,11 +22,13 @@ const createUser = (req, res, next) => {
         }))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new DataAlreadyUseError('Невозможно использовать эти данные'));
+            next(new ForbiddenError('Невозможно использовать эти данные'));
+            return;
           }
 
           if (err.name === 'ValidationError') {
-            next(new ValidationError('Переданы некорректные данные'));
+            next(new BadRequestError('Переданы некорректные данные'));
+            return;
           }
 
           next(err);
@@ -50,13 +49,7 @@ const login = (req, res, next) => {
       });
       res.send({ _id: user._id, email: user.email });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      }
-
-      next(err);
-    });
+    .catch(next);
 };
 
 const getUsers = (req, res, next) => {
@@ -74,10 +67,12 @@ const getCurrentUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        return;
       }
 
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
       next(err);
@@ -93,10 +88,12 @@ const getUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        return;
       }
 
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
       next(err);
@@ -108,14 +105,17 @@ const updateUser = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
     .orFail()
-    .then((data) => res.send({ data }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
+      console.log(err);
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        return;
       }
 
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
       next(err);
@@ -127,14 +127,16 @@ const updateUserAvatar = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
     .orFail()
-    .then((data) => res.send({ data }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        return;
       }
 
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
       next(err);

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { regexp } = require('../utils/utils');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,8 +12,8 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator(v) {
-        return /https?:\/\/[^ "]+$/.test(v);
+      validator(value) {
+        return regexp.test(value);
       },
       message: 'Не валидные данные',
     },

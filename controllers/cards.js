@@ -1,5 +1,7 @@
 const Card = require('../models/card');
-const { ValidationError, NotFoundError, ForbiddenError } = require('../utils/errors');
+const { BadRequestError } = require('../utils/errors/badRequest');
+const { NotFoundError } = require('../utils/errors/notFound');
+const { ForbiddenError } = require('../utils/errors/forbidden');
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -8,7 +10,8 @@ const createCard = (req, res, next) => {
     .then((card) => res.send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
       next();
@@ -26,7 +29,7 @@ const deleteCard = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
-        next(new ForbiddenError('Невозможно удалить карточку'));
+        throw new ForbiddenError('Невозможно удалить карточку');
       } else {
         Card.deleteOne(card)
           .then(() => res.send({ card }));
@@ -35,13 +38,15 @@ const deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемая карточка не найдена'));
+        return;
       }
 
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
-      next();
+      next(err);
     });
 };
 
@@ -58,13 +63,15 @@ const setCardLike = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемая карточка не найдена'));
+        return;
       }
 
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
-      next();
+      next(err);
     });
 };
 
@@ -81,13 +88,15 @@ const deleteCardLike = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError('Запрашиваемая карточка не найдена'));
+        return;
       }
 
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new BadRequestError('Переданы некорректные данные'));
+        return;
       }
 
-      next();
+      next(err);
     });
 };
 
