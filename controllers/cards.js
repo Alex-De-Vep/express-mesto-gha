@@ -14,7 +14,7 @@ const createCard = (req, res, next) => {
         return;
       }
 
-      next();
+      next(err);
     });
 };
 
