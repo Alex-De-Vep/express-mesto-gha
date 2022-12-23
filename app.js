@@ -18,6 +18,7 @@ const options = {
   origin: [
     'http://localhost:3000',
     'https://api.super.students.nomoredomains.club',
+    'https://super.nomoredomains.club',
     'https://alex-de-vep.github.io',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -27,7 +28,7 @@ const options = {
   credentials: true,
 };
 
-app.use('*', cors());
+app.use('*', cors(options));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
