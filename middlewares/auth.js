@@ -10,6 +10,7 @@ const auth = (req, res, next) => {
     payload = jwt.verify(req.cookies.jwt, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
     next(new UnauthorizedError('Необходима авторизация'));
+    return;
   }
 
   req.user = payload;

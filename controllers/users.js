@@ -24,7 +24,7 @@ const createUser = (req, res, next) => {
         }))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new ConflictError('Невозможно использовать эти данные'));
+            next(new ConflictError('Невозможно использовать этот email'));
             return;
           }
 
@@ -107,7 +107,7 @@ const getUser = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
+  User.findByIdAndUpdate(req._id, { name, about }, { runValidators: true, new: true })
     .orFail()
     .then((data) => res.send(data))
     .catch((err) => {
@@ -128,7 +128,7 @@ const updateUser = (req, res, next) => {
 const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
+  User.findByIdAndUpdate(req._id, { avatar }, { runValidators: true, new: true })
     .orFail()
     .then((data) => res.send(data))
     .catch((err) => {

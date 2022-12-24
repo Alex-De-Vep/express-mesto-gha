@@ -19,7 +19,7 @@ const createCard = (req, res, next) => {
 };
 
 const getCards = (req, res, next) => {
-  Card.find({})
+  Card.find({}).sort({ createdAt: -1 })
     .then((data) => res.send(data))
     .catch(next);
 };
@@ -30,10 +30,9 @@ const deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('Невозможно удалить карточку');
-      } else {
-        Card.deleteOne(card)
-          .then(() => res.send({ card }));
       }
+
+      return Card.deleteOne(card).then(() => res.send({ card }));
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {

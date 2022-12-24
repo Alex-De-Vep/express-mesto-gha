@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const cors = require('cors');
+require('dotenv').config();
 const handleCentralError = require('./utils/errors');
 const router = require('./routes/routes');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
