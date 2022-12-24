@@ -19,7 +19,7 @@ const createCard = (req, res, next) => {
 };
 
 const getCards = (req, res, next) => {
-  Card.find({}).sort({ createdAt: -1 })
+  Card.find({}).sort({ createdAt: 'desc' })
     .then((data) => res.send(data))
     .catch(next);
 };
